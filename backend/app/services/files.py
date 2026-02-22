@@ -9,7 +9,7 @@ def get_all_files_handler(db: Session):
     return db.query(FilesModel).all()
 
 
-def get_files_by_id_handler(db: Session, id: int):
+def get_files_by_id_handler(db: Session, id: str):
     file_record = db.query(FilesModel).filter(FilesModel.id == id).first()
 
     if not file_record:
@@ -19,7 +19,7 @@ def get_files_by_id_handler(db: Session, id: int):
     return file_record
 
 
-def delete_files_by_id_handler(db: Session, id: int):
+def delete_files_by_id_handler(db: Session, id: str):
     file_record = db.query(FilesModel).filter(FilesModel.id == id).first()
 
     if not file_record:

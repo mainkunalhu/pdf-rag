@@ -17,10 +17,10 @@ def get_all_files(db: Session = Depends(get_db)):
 
 
 @files_router.get("/{id}")
-def get_files_by_id(id: int, db: Session = Depends(get_db)):
+def get_files_by_id(id: str, db: Session = Depends(get_db)):
     return get_files_by_id_handler(db=db, id=id)
 
 
 @files_router.delete("/{id}")
-def delete_files_by_id(id: int, db: Session = Depends(get_db)):
+def delete_files_by_id(id: str, db: Session = Depends(get_db)):
     return delete_files_by_id_handler(db=db, id=id)
