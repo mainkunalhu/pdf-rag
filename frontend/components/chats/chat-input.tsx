@@ -1,4 +1,6 @@
-import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
+"use client";
+
+import { Field, FieldGroup } from "@/components/ui/field";
 import {
     InputGroup,
     InputGroupAddon,
@@ -6,21 +8,49 @@ import {
     InputGroupText,
     InputGroupTextarea,
 } from "@/components/ui/input-group";
+import { useChatStore } from "@/store/use-chat-store";
+import { usePdfStore } from "@/store/use-pdf-store";
 import { SendHorizontal } from "lucide-react";
+import { useState } from "react";
 
 export default function ChatInput() {
+    const { selectedPdfId } = usePdfStore();
+    const { sendMessage, isLoading } = useChatStore();
+    const [input, setInput] = useState("");
+
+    const handleSend = async () => {
+        if (!input.trim() || !selectedPdfId || isLoading) return;
+
+        const currentPrompt = input;
+        setInput("");
+        await sendMessage(selectedPdfId, currentPrompt);
+    };
+
     return (
         <FieldGroup className="max-w-full">
             <Field>
                 <InputGroup>
                     <InputGroupTextarea
-                        id="block-end-textarea"
-                        placeholder="Ask Assitant an question..."
+                        disabled={!selectedPdfId || isLoading}
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" && !e.shiftKey) {
+                                e.preventDefault();
+                                handleSend();
+                            }
+                        }}
+                        placeholder={
+                            selectedPdfId
+                                ? "Ask Assistant a question..."
+                                : "Please Select Any Docs to start Conversation"
+                        }
                     />
                     <InputGroupAddon align="block-end">
-                        <InputGroupText>0/280</InputGroupText>
+                        <InputGroupText>{`${input.length}/280`}</InputGroupText>
                         <InputGroupButton
-                            variant="default"
+                            onClick={handleSend}
+                            disabled={isLoading || !input.trim()}
                             size="sm"
                             className="ml-auto"
                         >
@@ -28,7 +58,6 @@ export default function ChatInput() {
                         </InputGroupButton>
                     </InputGroupAddon>
                 </InputGroup>
-                <FieldDescription>AI can make mistakes.</FieldDescription>
             </Field>
         </FieldGroup>
     );
